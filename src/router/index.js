@@ -6,14 +6,26 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: () => import('@/views/Home.vue'),
-  }
+	{
+		path: '/',
+		name: 'Home',
+		component: () => import('@/views/Home.vue'),
+	},
+	{
+		path: '/visualization',
+		name: 'Visualization',
+		component: () => import('@/views/visualizations/VisualizationRoot.vue'),
+		children: [
+			{
+				path: 'quick-sort',
+				name: 'QuickSort',
+				component: () => import('@/views/visualizations/QuickSort.vue'),
+			}
+		]
+	}
 ]
 
 export default new VueRouter({
-  mode: 'history',
-  routes
+	mode: 'history',
+	routes
 })

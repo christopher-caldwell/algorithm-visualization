@@ -5,10 +5,11 @@
         h1 Quick Sort
       v-col(cols=3)
         v-text-field(
+          select
+          :items="[]"
           outlined
-          label='Number of bars'
-          :value="numberOfBars"
-          @input="updateBars"
+          label='Speed'
+          v-model="speed"
         )
       v-col(align='center' cols=3)
         v-btn(@click="start") Start
@@ -18,14 +19,15 @@
 </template>
 
 <script>
-import { createSource } from '@/util/generateSource'
+import { createSource } from '@/util/'
 // import { swapElements } from '@/util/quickSort'
 export default {
   name: 'Home',
   data(){
     return {
       bars: [],
-      numberOfBars: Math.floor(Math.random() * 200)
+      speed: '',
+      numberOfBars: 150
     }
   },
   methods: {
@@ -37,10 +39,6 @@ export default {
       // this.bars = sortedBars
       console.log('done')
     },
-    updateBars(newNumberOfBars){
-      this.numberOfBars = newNumberOfBars
-      this.bars = createSource(newNumberOfBars)
-    },
     waitOn(ms){
       return new Promise(resolve => setTimeout(resolve, ms))
     },
@@ -49,9 +47,8 @@ export default {
       let temp = arr[leftPointer];
       arr[leftPointer]= arr[iterator];
       arr[iterator] = temp;
-      await this.waitOn(500)
+      await this.waitOn(100)
       this.bars = [...arr]
-      await this.$nextTick()
     },
     async partition(arr, left, right, isAscendingOrder){
       let pivot = arr[left];

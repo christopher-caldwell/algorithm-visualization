@@ -1,26 +1,40 @@
-// const testSet = [56,12,121,11,57]
+import { swapElements, waitForMs } from './index'
 
-function swapElements(arr, leftPointer, iterator){
-  // capturing the value of the left pointer
-  let temp = arr[leftPointer];
-  arr[leftPointer]= arr[iterator];
-  arr[iterator] = temp;
+const resetColor = (arr, callback, isPivotReset) => {
+  if(isPivotReset){
+    arr.forEach(item => {
+      item.isPivot = false 
+      item.isTarget = false 
+    })
+    callback(arr)
+  } else {
+    arr.forEach(item => {
+      item.isTarget = false 
+    })
+    callback(arr)
+  }
 }
 
-function partition(arr, left, right, isAscendingOrder, callback){
+const partition = async (arr, left, right, isAscendingOrder, callback, waitDuration) => {
+  resetColor(arr, callback, true)
+  arr[left].isPivot = true
+  callback(arr)
   let pivot = arr[left];
   let  leftPointer = left;
   // starting at left +1 because left will be the pivot
   for(let iterator = left + 1; iterator <= right; iterator++){
+    resetColor(arr, callback)
+    arr[iterator].isTarget = true
+    await waitForMs(waitDuration)
+    callback(arr)
     const evaluation = isAscendingOrder
-      ? arr[iterator] < pivot
-      : arr[iterator] > pivot
+      ? arr[iterator]['height'] < pivot['height']
+      : arr[iterator]['height'] > pivot['height']
     //////////////////////////////////////////////////
     if (evaluation){
       // increment the pointer because the proper evaluation has been made
         leftPointer++;
         swapElements(arr, leftPointer, iterator)
-        callback(arr)
     }
   }
 
@@ -30,16 +44,15 @@ function partition(arr, left, right, isAscendingOrder, callback){
   const temp = arr[leftPointer];
   arr[leftPointer] = arr[left];
   arr[left] = temp;
-
   return leftPointer;
 
 }
 
-function sorting(arr, left, right, isAscendingOrder, callback){
+const sorting = async (arr, left, right, isAscendingOrder, callback, waitDuration) => {
   if(left < right) {
-    let q = partition(arr, left, right, isAscendingOrder, callback);
-    sorting(arr, left, q, isAscendingOrder, callback);
-    sorting(arr, q + 1, right, isAscendingOrder, callback);
+    let q = await partition(arr, left, right, isAscendingOrder, callback, waitDuration);
+    await sorting(arr, left, q, isAscendingOrder, callback, waitDuration);
+    await sorting(arr, q + 1, right, isAscendingOrder, callback, waitDuration);
   }
   return arr
 }
