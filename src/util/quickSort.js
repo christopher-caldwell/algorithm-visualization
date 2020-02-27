@@ -48,15 +48,80 @@ const partition = async (arr, left, right, isAscendingOrder, callback, waitDurat
 
 }
 
-const sorting = async (arr, left, right, isAscendingOrder, callback, waitDuration) => {
+export const quickSortLeftPartition = async (arr, left, right, isAscendingOrder, callback, waitDuration) => {
   if(left < right) {
     let q = await partition(arr, left, right, isAscendingOrder, callback, waitDuration);
-    await sorting(arr, left, q, isAscendingOrder, callback, waitDuration);
-    await sorting(arr, q + 1, right, isAscendingOrder, callback, waitDuration);
+    await quickSortLeftPartition(arr, left, q, isAscendingOrder, callback, waitDuration);
+    await quickSortLeftPartition(arr, q + 1, right, isAscendingOrder, callback, waitDuration);
   }
   return arr
 }
 
+const findMiddleIndexOfPartition = (leftIndex, rightIndex) => {
+  return Math.floor((rightIndex + leftIndex) / 2)
+}
 
+const ascendingOrderSort = (items, leftIndex, rightIndex, objectPropertyToSortBy, pivotItem) => {
+  let leftIndexPointer = leftIndex
+  let rightIndexPointer = rightIndex
+  while (leftIndexPointer <= rightIndexPointer) {
+      while (items[leftIndexPointer][objectPropertyToSortBy] < pivotItem) {
+          leftIndexPointer++;
+      }
+      while (items[rightIndexPointer][objectPropertyToSortBy] > pivotItem) {
+          rightIndexPointer--;
+      }
+      if (leftIndexPointer <= rightIndexPointer) {
+          swapElements(items, leftIndexPointer, rightIndexPointer);
+          leftIndexPointer++;
+          rightIndexPointer--;
+      }
+  }
+  return leftIndex
+}
 
-export default sorting
+const descendingOrderSort = (items, leftIndex, rightIndex, objectPropertyToSortBy, pivotItem) => {
+  let leftIndexPointer = leftIndex
+  let rightIndexPointer = rightIndex
+  while (leftIndexPointer <= rightIndexPointer) {
+      while (items[leftIndexPointer][objectPropertyToSortBy] < pivotItem) {
+          leftIndexPointer++;
+      }
+      while (items[rightIndexPointer][objectPropertyToSortBy] > pivotItem) {
+          rightIndexPointer--;
+      }
+      if (leftIndexPointer <= rightIndexPointer) {
+          swapElements(items, rightIndexPointer, leftIndexPointer);
+          leftIndexPointer++;
+          rightIndexPointer--;
+      }
+  }
+  return leftIndex
+}
+
+const determinePartitionIndexPosition = (items, leftIndex, rightIndex, objectPropertyToSortBy, isSortingInAscendingOrder) => {
+  const pivotIndex = findMiddleIndexOfPartition(leftIndex, rightIndex)
+  const pivotItem = items[pivotIndex][objectPropertyToSortBy]
+  let leftIndexPointer
+  if(isSortingInAscendingOrder){
+    leftIndexPointer = ascendingOrderSort(items, leftIndex, rightIndex, objectPropertyToSortBy, pivotItem)
+  } else {
+    leftIndexPointer = descendingOrderSort(items, leftIndex, rightIndex, objectPropertyToSortBy, pivotItem)
+  }
+  return leftIndexPointer;
+}
+
+export const quickSortCenterPartition = (items, leftIndex, rightIndex, objectPropertyToSortBy, isSortingInAscendingOrder) => {
+  if (items.length < 1) { return items }
+  let index
+  index = determinePartitionIndexPosition(items, leftIndex, rightIndex, objectPropertyToSortBy, isSortingInAscendingOrder); 
+  // more elements on the left side of the pivot
+  if (leftIndex < index - 1) { 
+    quickSortCenterPartition(items, leftIndex, index - 1, objectPropertyToSortBy, isSortingInAscendingOrder);
+  }
+  //more elements on the right side of the pivot
+  if (index < rightIndex) { 
+    quickSortCenterPartition(items, index, rightIndex, objectPropertyToSortBy);
+  }
+  return items;
+}

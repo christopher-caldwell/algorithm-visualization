@@ -1,13 +1,4 @@
-export const shuffle = originalSet => {
-	const maxIndex = originalSet.length - 1
-	for(let iterator = 0; iterator < maxIndex; iterator++) {
-		const randomIndex = Math.floor(Math.random() * maxIndex)
-		const currentItem = originalSet[iterator]
-    originalSet[iterator] = originalSet[randomIndex]
-    originalSet[randomIndex] = currentItem
-	}
-	return originalSet
-}
+import shuffle from 'simple-array-shuffler'
 
 export const waitForMs = msToWait => {
   return new Promise(resolve => setTimeout(resolve, msToWait))
@@ -32,4 +23,3 @@ export const createSource = numberOfBars => {
 
   return shuffle(output)
 }
-

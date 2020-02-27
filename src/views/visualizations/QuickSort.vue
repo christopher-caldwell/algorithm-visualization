@@ -3,13 +3,22 @@
     v-row(justify='space-between')
       v-col(cols=3)
         h1 Quick Sort
-      v-col(cols=3 align='center')
-        v-select(
-          :items="allowableSpeeds"
-          outlined
-          label='Speed'
-          v-model="speed"
-        )
+      v-col(cols=3 align='start')
+        div(:style="{width: '80%'}")
+          v-select(
+            :items="allowablePartitionPlacements"
+            outlined
+            label='Partition Placement'
+            v-model="partitionPlacement"
+          )
+      v-col(cols=3 align='start')
+        div(:style="{width: '80%'}")
+          v-select(
+            :items="allowableSpeeds"
+            outlined
+            label='Speed'
+            v-model="speed"
+          )
       v-col
         v-row(justify='end')
           v-col(align='center' cols=1)
@@ -37,30 +46,54 @@
             h3 Red:
           v-col
             h3 Target Index
+      v-col(cols=4)
+        v-row
+          v-col(cols=7)
+            h3 Resulting Time:
+          v-col
+            h3 {{ displayTime }}
     
 </template>
 
 <script>
-import { allowableSpeeds } from '@/data/constants'
+import { allowableSpeeds, allowablePartitionPlacements } from '@/data/constants'
 import { createSource } from '@/util/'
-import quickSort from '@/util/quickSort'
+import { quickSortCenterPartition, quickSortLeftPartition } from '@/util/quickSort'
 export default {
   name: 'QuickSort',
   data(){
     return {
       bars: [],
-      speed: '',
+      speed: 0,
+      partitionPlacement: 'Left',
       numberOfBars: 100,
-      allowableSpeeds: Object.values(allowableSpeeds)
+      elapsedTime: 0,
+      allowableSpeeds: Object.values(allowableSpeeds),
+      allowablePartitionPlacements
+    }
+  },
+  computed: {
+    displayTime(){
+      if(!this.elapsedTime){
+        return ''
+      } else {
+        const formattedTime = (this.elapsedTime / 1000).toFixed(2)
+        return `${formattedTime} seconds`
+      }
     }
   },
   methods: {
     async start(){
       console.log('start')
+      const beginTime = Date.now()
       const barsCopy = [...this.bars]
-      const sortedBars = await quickSort(barsCopy, 0, barsCopy.length - 1, false, this.updateProgress, this.speed)
+      const sortedBars = this.partitionPlacement === 'Left'
+        ? await quickSortLeftPartition(barsCopy, 0, barsCopy.length - 1, false, this.updateProgress, this.speed)
+        : await quickSortCenterPartition(barsCopy, 0, barsCopy.length - 1, false, this.updateProgress, this.speed)
+      const endTime = Date.now()
+      const resultingTime = endTime - beginTime
+      this.elapsedTime = resultingTime
       console.log('sorted bars', sortedBars)
-      // this.bars = sortedBars
       console.log('done')
     },
     updateProgress(newBarsPosition){

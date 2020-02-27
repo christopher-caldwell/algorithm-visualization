@@ -15,5 +15,9 @@ export const allowableSpeeds = {
     text: 'Full Speed',
     value: 0
   },
-
 }
+
+export const allowablePartitionPlacements = [
+  'Middle',
+  'Left'
+]
