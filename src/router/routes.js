@@ -5,13 +5,8 @@ export const routes = [
     title: 'Home',
   },
   {
-    path: '/build',
+    path: '/visualization/quick-sort',
     icon: 'mdi-rocket',
-    title: 'Build a Fleet',
-  },
-  {
-    path: '/test',
-    icon: 'mdi-gamepad-variant',
-    title: 'Test',
+    title: 'Quick Sort',
   },
 ]

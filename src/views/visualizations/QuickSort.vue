@@ -1,57 +1,64 @@
 <template lang='pug'>
   v-container
     v-row(justify='space-between')
-      v-col(cols=3)
-        h1 Quick Sort
-      v-col(cols=3 align='start')
+      v-col
+        h2 Quick Sort
+      v-col.hide-portrait-phone(cols=3  align='start')
         div(:style="{width: '80%'}")
           v-select(
+            dense
+            hide-details
             :items="allowablePartitionPlacements"
             outlined
-            label='Partition Placement'
+            label='Pivot Point'
             v-model="partitionPlacement"
           )
-      v-col(cols=3 align='start')
-        div(:style="{width: '80%'}")
+      v-col.hide-portrait-phone(cols=3 align='start')
+        div(:style="{width: '90%'}")
           v-select(
+            dense
+            hide-details
             :items="allowableSpeeds"
             outlined
             label='Speed'
             v-model="speed"
           )
-      v-col
+      v-col.hide-portrait-phone
         v-row(justify='end')
-          v-col(align='center' cols=1)
+          v-col(align='center' cols=6 md=2)
             v-icon(@click="start") mdi-play
-          v-col(align='center' cols=1)
+          v-col(align='center' cols=6 md=2)
             v-icon(@click="shuffle") mdi-shuffle
-    v-row.bar-row
+    v-row.hide-above-portait
+      v-col
+        h3 Please rotate your device for the best experience
+    v-row.bar-row.hide-portrait-phone
       v-col.bar-col
         div.bar(v-for="(bar, index) in bars" :style="{height: `${bar.height}%`, backgroundColor: determineBackgroundColor(bar)}")
-    v-row
+    v-row.hide-portrait-phone
       v-col
-        h2 Color Key:
-    v-row
+        h4 Color Key:
+    v-row.hide-portrait-phone
       v-col(cols=4)
         v-row
-          v-col(cols=4)
+          v-col(cols=5 md=3)
             div.color-box.blue-box
-            h3 Blue:
+            h5 Blue:
           v-col
-            h3 Pivot Point
+            h5 Pivot Point
       v-col(cols=4)
         v-row
-          v-col(cols=4)
+          v-col(cols=5 md=3)
             div.color-box.red-box
-            h3 Red:
+            h5 Red:
           v-col
-            h3 Target Index
+            h5 Target Index
       v-col(cols=4)
         v-row
-          v-col(cols=7)
-            h3 Resulting Time:
+          v-col(cols=5)
+            h5 Resulting Time:
           v-col
-            h3 {{ displayTime }}
+            h5 {{ displayTime }}
     
 </template>
 
@@ -89,7 +96,7 @@ export default {
       const barsCopy = [...this.bars]
       const sortedBars = this.partitionPlacement === 'Left'
         ? await quickSortLeftPartition(barsCopy, 0, barsCopy.length - 1, false, this.updateProgress, this.speed)
-        : await quickSortCenterPartition(barsCopy, 0, barsCopy.length - 1, false, this.updateProgress, this.speed)
+        : await quickSortCenterPartition(barsCopy, 0, barsCopy.length - 1, 'height', this.updateProgress, this.speed)
       const endTime = Date.now()
       const resultingTime = endTime - beginTime
       this.elapsedTime = resultingTime
@@ -126,18 +133,27 @@ export default {
   .bar-col
     height: 100%
     display: flex
-    align-items: flex-end
+    align-items: center
   .bar-row
     display: flex
     align-items: flex-end
-    height: 65vh
+    height: 55vh
   .color-box
-    height: 20px
-    width: 20px
+    height: 15px
+    width: 15px
     float: left
     margin-right: 20px
+    @media screen and (min-width: 600px)
+      margin-right: 10px
   .red-box
     background-color: red
   .blue-box
     background-color: blue
+  .hide-portrait-phone
+    @media screen and (max-width: 600px)
+      display: none
+  .hide-above-portait
+    @media screen and (min-width: 600px)
+      display: none
+  
 </style>

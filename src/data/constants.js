@@ -1,15 +1,15 @@
 export const allowableSpeeds = {
-  2500: {
-    text: 'Super Slow',
-    value: 2500
-  },
   1000: {
-    text: 'Slow',
+    text: 'Super Slow',
     value: 1000
   },
-  700: {
+  300: {
+    text: 'Slow',
+    value: 300
+  },
+  100: {
     text: 'Normal',
-    value: 700
+    value: 100
   },
   0: {
     text: 'Full Speed',

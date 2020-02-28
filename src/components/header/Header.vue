@@ -11,7 +11,7 @@
 					label='Dark Mode'
 					hide-details
 				)
-		v-app-bar(app clipped-left)
+		v-app-bar.app-bar-modified-height(app clipped-left)
 			v-app-bar-nav-icon(@click.stop="drawer = !drawer")
 			v-toolbar-title.full-width
 				v-row(justify='space-between' align='baseline')
@@ -68,6 +68,10 @@ export default {
 </script>
 
 <style lang='sass'>
+	.app-bar-modified-height
+		height: 45px !important
+		& div
+			height: 45px !important
 	.menu-open
 		top: 8px !important
 		left: 200px !important

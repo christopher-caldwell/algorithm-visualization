@@ -57,71 +57,89 @@ export const quickSortLeftPartition = async (arr, left, right, isAscendingOrder,
   return arr
 }
 
+
 const findMiddleIndexOfPartition = (leftIndex, rightIndex) => {
-  return Math.floor((rightIndex + leftIndex) / 2)
+  return Math.floor((leftIndex + rightIndex) / 2)
 }
 
-const ascendingOrderSort = (items, leftIndex, rightIndex, objectPropertyToSortBy, pivotItem) => {
-  let leftIndexPointer = leftIndex
-  let rightIndexPointer = rightIndex
-  while (leftIndexPointer <= rightIndexPointer) {
-      while (items[leftIndexPointer][objectPropertyToSortBy] < pivotItem) {
-          leftIndexPointer++;
-      }
-      while (items[rightIndexPointer][objectPropertyToSortBy] > pivotItem) {
-          rightIndexPointer--;
-      }
-      if (leftIndexPointer <= rightIndexPointer) {
-          swapElements(items, leftIndexPointer, rightIndexPointer);
-          leftIndexPointer++;
-          rightIndexPointer--;
-      }
-  }
-  return leftIndex
-}
+// const leftIndexIncrementor = (items, leftIndexPointer, objectPropertyToSortBy, pivotItem) => {
+//   let leftIndexTarget = items[leftIndexPointer]
+//   if(objectPropertyToSortBy){
+//     leftIndexTarget = leftIndexTarget[objectPropertyToSortBy]
+//   }
+//   while (leftIndexTarget < pivotItem) {
+//     leftIndexPointer++;
+//     leftIndexIncrementor(items, leftIndexPointer, objectPropertyToSortBy, pivotItem)
+//   }
+// }
 
-const descendingOrderSort = (items, leftIndex, rightIndex, objectPropertyToSortBy, pivotItem) => {
-  let leftIndexPointer = leftIndex
-  let rightIndexPointer = rightIndex
-  while (leftIndexPointer <= rightIndexPointer) {
-      while (items[leftIndexPointer][objectPropertyToSortBy] < pivotItem) {
-          leftIndexPointer++;
-      }
-      while (items[rightIndexPointer][objectPropertyToSortBy] > pivotItem) {
-          rightIndexPointer--;
-      }
-      if (leftIndexPointer <= rightIndexPointer) {
-          swapElements(items, rightIndexPointer, leftIndexPointer);
-          leftIndexPointer++;
-          rightIndexPointer--;
-      }
-  }
-  return leftIndex
-}
+// const rightIndexDecrement = (items, rightIndexPointer, objectPropertyToSortBy, pivotItem) => {
+//   let rightIndexTarget = items[rightIndexPointer]
+//   if(objectPropertyToSortBy){
+//     rightIndexTarget = rightIndexTarget[objectPropertyToSortBy]
+//   }
+//   while (rightIndexTarget > pivotItem) {
+//     rightIndexPointer--;
+//     rightIndexDecrement(items, rightIndexPointer, objectPropertyToSortBy, pivotItem)
+//   }
+// }
 
-const determinePartitionIndexPosition = (items, leftIndex, rightIndex, objectPropertyToSortBy, isSortingInAscendingOrder) => {
+// const standardPartitionHandler = (leftIndexPointer, rightIndexPointer, items, pivotItem, objectPropertyToSortBy) => {
+//   while (leftIndexPointer <= rightIndexPointer) {
+//     while (items[leftIndexPointer][objectPropertyToSortBy] < pivotItem) {
+//       leftIndexPointer++;
+//     }
+//     while (items[rightIndexPointer][objectPropertyToSortBy] > pivotItem) {
+//       rightIndexPointer--;
+//     }
+//     if (leftIndexPointer <= rightIndexPointer) {
+//       swapElements(items, leftIndexPointer, rightIndexPointer);
+//       leftIndexPointer++;
+//       rightIndexPointer--;
+//     }
+//   }
+// }
+
+const determinePartitionIndexPosition = async (items, leftIndex, rightIndex, objectPropertyToSortBy, callback, timeToWait) => {
+  resetColor(items, callback, true)
   const pivotIndex = findMiddleIndexOfPartition(leftIndex, rightIndex)
   const pivotItem = items[pivotIndex][objectPropertyToSortBy]
-  let leftIndexPointer
-  if(isSortingInAscendingOrder){
-    leftIndexPointer = ascendingOrderSort(items, leftIndex, rightIndex, objectPropertyToSortBy, pivotItem)
-  } else {
-    leftIndexPointer = descendingOrderSort(items, leftIndex, rightIndex, objectPropertyToSortBy, pivotItem)
+  items[pivotIndex].isPivot = true
+  callback(items)
+  let leftIndexPointer = leftIndex
+  let rightIndexPointer = rightIndex
+  while (leftIndexPointer <= rightIndexPointer) {
+    while (items[leftIndexPointer][objectPropertyToSortBy] < pivotItem) {
+      leftIndexPointer++;
+    }
+    while (items[rightIndexPointer][objectPropertyToSortBy] > pivotItem) {
+      rightIndexPointer--;
+    }
+    if (leftIndexPointer <= rightIndexPointer) {
+      // promise.all
+      resetColor(items, callback)
+      items[leftIndexPointer].isTarget = true
+      items[rightIndexPointer].isTarget = true
+      await waitForMs(timeToWait)
+      callback(items)
+      swapElements(items, leftIndexPointer, rightIndexPointer);
+      leftIndexPointer++;
+      rightIndexPointer--;
+    }
   }
   return leftIndexPointer;
 }
 
-export const quickSortCenterPartition = (items, leftIndex, rightIndex, objectPropertyToSortBy, isSortingInAscendingOrder) => {
-  if (items.length < 1) { return items }
+export const quickSortCenterPartition = async (items, leftIndex, rightIndex, objectPropertyToSortBy, callback, timeToWait) => {
   let index
-  index = determinePartitionIndexPosition(items, leftIndex, rightIndex, objectPropertyToSortBy, isSortingInAscendingOrder); 
-  // more elements on the left side of the pivot
-  if (leftIndex < index - 1) { 
-    quickSortCenterPartition(items, leftIndex, index - 1, objectPropertyToSortBy, isSortingInAscendingOrder);
-  }
-  //more elements on the right side of the pivot
-  if (index < rightIndex) { 
-    quickSortCenterPartition(items, index, rightIndex, objectPropertyToSortBy);
+  if (items.length > 1) {
+      index = await determinePartitionIndexPosition(items, leftIndex, rightIndex, objectPropertyToSortBy, callback, timeToWait); //index returned from partition
+      if (leftIndex < index - 1) { //more elements on the left side of the pivot
+          await quickSortCenterPartition(items, leftIndex, index - 1, objectPropertyToSortBy, callback, timeToWait);
+      }
+      if (index < rightIndex) { //more elements on the right side of the pivot
+          await quickSortCenterPartition(items, index, rightIndex, objectPropertyToSortBy, callback, timeToWait);
+      }
   }
   return items;
 }
