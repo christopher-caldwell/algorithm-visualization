@@ -20,6 +20,11 @@ const routes = [
 				path: 'quick-sort',
 				name: 'QuickSort',
 				component: () => import('@/views/visualizations/QuickSort.vue'),
+			},
+			{
+				path: 'merge-sort',
+				name: 'MergeSort',
+				component: () => import('@/views/visualizations/MergeSort.vue'),
 			}
 		]
 	}

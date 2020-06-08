@@ -9,4 +9,9 @@ export const routes = [
     icon: 'mdi-rocket',
     title: 'Quick Sort',
   },
+  {
+    path: '/visualization/merge-sort',
+    icon: 'mdi-rocket',
+    title: 'Merge Sort',
+  },
 ]

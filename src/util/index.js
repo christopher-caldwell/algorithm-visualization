@@ -23,3 +23,18 @@ export const createSource = numberOfBars => {
 
   return shuffle(output)
 }
+
+export const resetColor = (arr, callback, isPivotReset) => {
+  if(isPivotReset){
+    arr.forEach(item => {
+      item.isPivot = false 
+      item.isTarget = false 
+    })
+    callback(arr)
+  } else {
+    arr.forEach(item => {
+      item.isTarget = false 
+    })
+    callback(arr)
+  }
+}

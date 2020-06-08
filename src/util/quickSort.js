@@ -1,19 +1,6 @@
-import { swapElements, waitForMs } from './index'
+import { swapElements, waitForMs, resetColor } from './index'
 
-const resetColor = (arr, callback, isPivotReset) => {
-  if(isPivotReset){
-    arr.forEach(item => {
-      item.isPivot = false 
-      item.isTarget = false 
-    })
-    callback(arr)
-  } else {
-    arr.forEach(item => {
-      item.isTarget = false 
-    })
-    callback(arr)
-  }
-}
+
 
 const partition = async (arr, left, right, isAscendingOrder, callback, waitDuration) => {
   resetColor(arr, callback, true)
